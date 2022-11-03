@@ -4,7 +4,8 @@
 
 #include <iostream>
 #include <tgbot/tgbot.h>
-#include "CalendarConnector.hpp"
+#include "Auth.hpp"
+#include "cpr/cpr.h"
 
 namespace MessageListeners
 {
@@ -17,15 +18,26 @@ namespace MessageListeners
     inline TgBot::EventBroadcaster::MessageListener auth(TgBot::Bot &bot)
     {
         return [&bot](TgBot::Message::Ptr message)
-        { bot.getApi().sendMessage(message->chat->id, "Not supported yet!"); };
+        {
+            Auth auth;
+            long status = auth.setCurrentChat(std::to_string(message->chat->id));
+            if (status == 200)
+            {
+                bot.getApi().sendMessage(message->chat->id, "https://accounts.google.com/o/oauth2/auth?client_id=227386243715-g04tg86v3228v9u6ng697c678or5obtn.apps.googleusercontent.com&redirect_uri=http://localhost:8000/authorize&scope=https://www.googleapis.com/auth/calendar.app.created&response_type=code");
+            }
+            else {
+                bot.getApi().sendMessage(message->chat->id, "Error. Cannot authenticate");
+            }
+        };
     }
 
     inline TgBot::EventBroadcaster::MessageListener schedule(TgBot::Bot &bot)
     {
         return [&bot](TgBot::Message::Ptr message)
         {
-            callPythonScript();
-            bot.getApi().sendMessage(message->chat->id, "Not supported yet!"); 
+            Auth auth;
+            std::string schedule = auth.schedule(std::to_string(message->chat->id));
+            bot.getApi().sendMessage(message->chat->id, schedule);
         };
     }
 
@@ -33,7 +45,6 @@ namespace MessageListeners
     {
         return [&bot](TgBot::Message::Ptr message)
         {
-
             bot.getApi().sendMessage(message->chat->id, "Not supported yet!");
         };
     }
@@ -49,6 +60,5 @@ namespace MessageListeners
         bot.getApi().sendMessage(message->chat->id, "Your message is: " + message->text); };
     }
 }
-
 
 #endif /* MESSAGELISTENERS_H */
