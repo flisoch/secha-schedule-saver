@@ -1,7 +1,7 @@
 set(LIB_TARGET "LibScheduleSaver")
 add_library(${LIB_TARGET} 
         ScheduleSaverBot.cpp
-        AuthServer.cpp
+        WebServer.cpp
         Auth.cpp
 )
 
@@ -25,4 +25,11 @@ target_link_libraries(
         OpenSSL::SSL OpenSSL::Crypto
         unofficial::mongoose::mongoose
         nlohmann_json::nlohmann_json
+)
+
+add_custom_command(
+        TARGET ${LIB_TARGET} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+                ${PROJECT_SOURCE_DIR}/src/WebScraper/schedule.csv
+                ${PROJECT_BINARY_DIR}/schedule.csv
 )

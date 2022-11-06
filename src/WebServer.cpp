@@ -1,11 +1,11 @@
-#include "AuthServer.hpp"
-#include <nlohmann/json.hpp>
-#include "Auth.hpp"
 #include <string>
+#include <nlohmann/json.hpp>
+#include "WebServer.hpp"
+#include "Auth.hpp"
+#include "Requests.hpp"
 
-AuthServer::AuthServer()
+WebServer::WebServer(Auth &auth) : auth{auth}
 {
-    init();
 }
 
 std::string parseChatId(struct mg_http_message *hm)
@@ -37,7 +37,7 @@ void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
         {
             if (!chatId.empty())
             {
-                auth->current_chat_id = chatId;
+                auth->waiting_for_tokens.push(chatId);
                 mg_http_reply(c, 200, NULL, "");
             }
             else
@@ -56,8 +56,9 @@ void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
             }
             if (!code.empty())
             {
-                std::string access_token = auth->getToken(code);
-                auth->access_tokens.emplace(auth->current_chat_id, access_token);
+                std::string access_token = requests::oauth::getToken(code);
+                auth->access_tokens.emplace(auth->waiting_for_tokens.front(), access_token);
+                auth->waiting_for_tokens.pop();
                 mg_http_reply(c, 200, "Content-Type: application/json\r\n", "%s", access_token.c_str());
             }
             else
@@ -86,7 +87,7 @@ void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
     }
 }
 
-void AuthServer::init()
+void WebServer::start()
 {
     mg_mgr_init(&mgr);
 

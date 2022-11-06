@@ -17,13 +17,14 @@ class ScheduleSaverBot
 {
 public:
     void start();
-    ScheduleSaverBot();
+    ScheduleSaverBot(Auth& auth);
 
 private:
     void setEventListeners();
 
     string token;
     Bot bot;
+    Auth& auth;
 };
 
 

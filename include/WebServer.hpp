@@ -5,14 +5,15 @@
 #include "mongoose.h"
 #include "Auth.hpp"
 
-class AuthServer {
+class WebServer
+{
 public:
-    AuthServer();
-private:
-    void init();
+    WebServer(Auth &auth);
+    void start();
 
+private:
     struct mg_mgr mgr;
-    Auth auth;
+    Auth &auth;
 };
 
 #endif /* WEBSERVER_H */

@@ -1,8 +1,9 @@
 #include "ScheduleSaverBot.hpp"
 
-ScheduleSaverBot::ScheduleSaverBot()
+ScheduleSaverBot::ScheduleSaverBot(Auth& auth)
     : token{getenv("SECHA_BOT_TOKEN")},
-      bot{token}
+      bot{token}, 
+      auth{auth}
 {
     setEventListeners();
 }
@@ -10,9 +11,9 @@ ScheduleSaverBot::ScheduleSaverBot()
 void ScheduleSaverBot::setEventListeners()
 {
     bot.getEvents().onCommand("start", MessageListeners::start(bot));
-    bot.getEvents().onCommand("auth", MessageListeners::auth(bot));
-    bot.getEvents().onCommand("schedule", MessageListeners::schedule(bot));
-    bot.getEvents().onCommand("save_schedule", MessageListeners::saveSchedule(bot));
+    bot.getEvents().onCommand("auth", MessageListeners::auth(bot, auth));
+    bot.getEvents().onCommand("schedule", MessageListeners::schedule(bot, auth));
+    bot.getEvents().onCommand("save_schedule", MessageListeners::saveSchedule(bot, auth));
 
     bot.getEvents().onAnyMessage(MessageListeners::anyMessage(bot));
 }

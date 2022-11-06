@@ -7,4 +7,5 @@ include_directories($ENV{VCPKG_DIR}/installed/x64-linux/include)
 include_directories(include)
 
 add_subdirectory(src)
+add_subdirectory(test)
 add_subdirectory(app)
