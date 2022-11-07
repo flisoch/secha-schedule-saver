@@ -12,7 +12,7 @@ namespace requests
     {
         namespace
         {
-            static const std::string web_server = "http://localhost:8000";
+            static const std::string web_server = getenv("SECHA_BOT_SERVER_URL");
             static const std::string redirect_uri = web_server + "/authorize";
             static const std::string google_oauth = "https://accounts.google.com/o/oauth2";
             static const std::string google_oauth_token = google_oauth + "/token";
