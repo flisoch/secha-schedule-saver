@@ -18,13 +18,13 @@ namespace requests
             static const std::string google_oauth_token = google_oauth + "/token";
             static const std::string scope = "https://www.googleapis.com/auth/calendar";
             static const std::string google_oauth_code = google_oauth +
-                                "/auth?client_id=" + getenv("SECHA_BOT_CLIENT_ID") +
-                                "&redirect_uri=" + redirect_uri +
-                                "&scope=" + scope +
-                                "&response_type=code";
+                                                         "/auth?client_id=" + getenv("SECHA_BOT_CLIENT_ID") +
+                                                         "&redirect_uri=" + redirect_uri +
+                                                         "&scope=" + scope +
+                                                         "&response_type=code";
 
             static const std::string google_calendars = "https://www.googleapis.com/calendar/v3/calendars";
-            
+
             static std::string calendar_events(std::string calendar_id)
             {
                 static const std::string events_suffix = "/events";
@@ -107,16 +107,14 @@ namespace requests
             {
                 for (auto &event : schedule.events)
                 {
-                    cpr::Response r = cpr::Post(
+                    cpr::AsyncResponse r = cpr::PostAsync(
                         cpr::Url{url},
                         cpr::Bearer{access_token},
                         cpr::Body{event.toJson().dump()},
                         cpr::Header{{"Content-Type", "application/json"}});
-
-                    nlohmann::json json_response = nlohmann::json::parse(r.text);
                 }
             }
-            // deleteCalendar(access_token, calendarId);
+            deleteCalendar(access_token, calendarId);
             return calendarId;
         }
     }

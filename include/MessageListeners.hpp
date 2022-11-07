@@ -44,8 +44,8 @@ namespace MessageListeners
             if (auth.isAuthorized(message->chat->id))
             {
                 Schedule s = Schedule::loadSchedule();
-                std::string schedule = requests::calendar::saveSchedule(auth.getToken(message->chat->id), s);
-                bot.getApi().sendMessage(message->chat->id, schedule);
+                requests::calendar::saveSchedule(auth.getToken(message->chat->id), s);
+                bot.getApi().sendMessage(message->chat->id, "https://calendar.google.com/calendar/");
             }
             else
             {
