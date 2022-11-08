@@ -3,6 +3,7 @@ add_library(${LIB_TARGET}
         ScheduleSaverBot.cpp
         WebServer.cpp
         Auth.cpp
+        Config.cpp
 )
 
 find_package(Threads REQUIRED)
@@ -13,6 +14,7 @@ find_package(cpr CONFIG REQUIRED)
 
 find_package(unofficial-mongoose CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
+find_package(tomlplusplus CONFIG REQUIRED)
 
 find_library(TGBOT_CPP_LIBRARY TgBot)
 target_link_libraries(
@@ -25,6 +27,7 @@ target_link_libraries(
         OpenSSL::SSL OpenSSL::Crypto
         unofficial::mongoose::mongoose
         nlohmann_json::nlohmann_json
+        tomlplusplus::tomlplusplus
 )
 
 add_custom_command(
