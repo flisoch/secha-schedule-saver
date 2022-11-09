@@ -1,6 +1,3 @@
-#ifndef SCHEDULETEST_H
-#define SCHEDULETEST_H
-
 #include <string>
 
 #include "gtest/gtest.h"
@@ -20,5 +17,3 @@ TEST(Schedule, convertToISODateTime) {
     std::string datetime = Schedule::toISODatetime(date, time);
     ASSERT_NE(datetime, "");
 }
-
-#endif /* SCHEDULETEST_H */

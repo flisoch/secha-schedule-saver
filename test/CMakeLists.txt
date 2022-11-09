@@ -2,6 +2,7 @@ set(TARGET tests)
 set(TARGET_SRC
     maintest.cpp
     ScheduleTest.cpp
+    ConfigTest.cpp
 )
 
 add_executable( tests ${TARGET_SRC} )
@@ -13,4 +14,11 @@ target_link_libraries(${TARGET} PRIVATE
     GTest::gmock_main 
     GTest::gtest_main
     LibScheduleSaver
-    )
+)
+
+add_custom_command(
+    TARGET ${TARGET} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+            ${PROJECT_SOURCE_DIR}/config.toml
+            ${CMAKE_CURRENT_BINARY_DIR}/config.toml
+)

@@ -5,6 +5,7 @@
 #include "cpr/cpr.h"
 #include <nlohmann/json.hpp>
 #include "Schedule.hpp"
+#include "Config.hpp"
 
 namespace requests
 {
@@ -12,13 +13,13 @@ namespace requests
     {
         namespace
         {
-            static const std::string web_server = getenv("SECHA_BOT_SERVER_URL");
+            static const std::string web_server = Config::instance().get("servers.local.domain");
             static const std::string redirect_uri = web_server + "/authorize";
             static const std::string google_oauth = "https://accounts.google.com/o/oauth2";
             static const std::string google_oauth_token = google_oauth + "/token";
             static const std::string scope = "https://www.googleapis.com/auth/calendar";
             static const std::string google_oauth_code = google_oauth +
-                                                         "/auth?client_id=" + getenv("SECHA_BOT_CLIENT_ID") +
+                                                         "/auth?client_id=" + Config::instance().get(Config::VAR_APP_CLIENT_ID) +
                                                          "&redirect_uri=" + redirect_uri +
                                                          "&scope=" + scope +
                                                          "&response_type=code";
@@ -42,8 +43,8 @@ namespace requests
             std::string token;
 
             body["code"] = code;
-            body["client_id"] = getenv("SECHA_BOT_CLIENT_ID");
-            body["client_secret"] = getenv("SECHA_BOT_CLIENT_SECRET");
+            body["client_id"] = Config::instance().get(Config::VAR_APP_CLIENT_ID);
+            body["client_secret"] = Config::instance().get(Config::VAR_APP_SECRET);
             body["grant_type"] = "authorization_code";
             body["redirect_uri"] = url::redirect_uri;
 
