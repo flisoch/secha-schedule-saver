@@ -19,3 +19,11 @@ add_custom_command(
                 ${PROJECT_SOURCE_DIR}/config.toml
                 ${CMAKE_CURRENT_BINARY_DIR}/config.toml
 )
+
+set(INSTALL_PATH ${PROJECT_SOURCE_DIR}/deploy)
+install(
+        TARGETS ${APP_TARGET} 
+        RUNTIME DESTINATION ${INSTALL_PATH}
+)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/web_root/ DESTINATION ${INSTALL_PATH}/web_root)
+install(FILES ${PROJECT_SOURCE_DIR}/config.toml DESTINATION ${INSTALL_PATH}/)

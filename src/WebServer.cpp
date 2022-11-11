@@ -1,5 +1,7 @@
+#include <mongoose.h>
 #include <string>
 #include <nlohmann/json.hpp>
+#include "Config.hpp"
 #include "WebServer.hpp"
 #include "Auth.hpp"
 #include "Requests.hpp"
@@ -32,21 +34,8 @@ void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
     if (ev == MG_EV_HTTP_MSG)
     {
         struct mg_http_message *hm = (struct mg_http_message *)ev_data;
-        std::string chatId = parseChatId(hm);
 
-        if (mg_http_match_uri(hm, "/current"))
-        {
-            if (!chatId.empty())
-            {
-                auth->waiting_for_tokens.push(chatId);
-                mg_http_reply(c, 200, NULL, "");
-            }
-            else
-            {
-                mg_http_reply(c, 500, NULL, "%s", "Chat id parameter missing");
-            }
-        }
-        else if (mg_http_match_uri(hm, "/authorize"))
+        if (mg_http_match_uri(hm, "/authorize"))
         {
             struct mg_str params = hm->query;
             struct mg_str code_var = mg_http_var(hm->query, mg_str("code"));
@@ -67,21 +56,10 @@ void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
                 mg_http_reply(c, 500, NULL, "%s", "Parameters missing");
             }
         }
-        else if (mg_http_match_uri(hm, "/schedule"))
-        {
-
-            if (auth->access_tokens.find(chatId) != auth->access_tokens.end())
-            {
-                std::string access_token = auth->access_tokens.at(chatId);
-                std::string response = "{\"some_calendar\": \"calendar\"}";
-                mg_http_reply(c, 200, "Content-Type: application/json\r\n", "%s", response.c_str());
-            }
-            else
-            {
-                mg_http_reply(c, 500, "Content-Type: application/json\r\n", "%s", "Error. No access token found. Please send /auth command");
-            }
+        else if(mg_http_match_uri(hm, "/getschedule")) {
+            mg_http_serve_file(c, hm, "web_root/schedule.html", &opts);
         }
-        else if (mg_http_match_uri(hm, "/static/*"))
+        else if (mg_http_match_uri(hm, "/static/*") || mg_http_match_uri(hm, "/static/*/*"))
         {
             std::string uri = std::string(hm->uri.ptr, hm->uri.len);
             std::string substr = "/static/";
@@ -99,7 +77,10 @@ void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
 void WebServer::start()
 {
     mg_mgr_init(&mgr);
-    mg_http_listen(&mgr, "0.0.0.0:8000", fn, &auth); // Create listening connection
+    // std::string port = Config::instance().get("server.port");
+    std::string port = "8000";
+    std::string url = "0.0.0.0:" + port;
+    mg_http_listen(&mgr, url.c_str(), fn, &auth); // Create listening connection
     for (;;)
         mg_mgr_poll(&mgr, 1000);
 }

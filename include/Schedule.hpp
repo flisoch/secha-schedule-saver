@@ -24,11 +24,11 @@ public:
         nlohmann::json toJson() const
         {
             nlohmann::json start_json;
-            start_json["timezone"] = start.timezone;
+            start_json["timeZone"] = start.timezone;
             start_json["dateTime"] = start.dateTimeISO;
 
             nlohmann::json end_json;
-            end_json["timezone"] = end.timezone;
+            end_json["timeZone"] = end.timezone;
             end_json["dateTime"] = end.dateTimeISO;
 
             nlohmann::json json;
@@ -78,7 +78,7 @@ public:
         std::tm t = {};
         ss >> std::get_time(&t, "%d.%m.%Y %H:%M");
         std::stringstream().swap(ss);
-        ss << std::put_time(&t, "%Y-%m-%dT%H:%M:%SZ");
+        ss << std::put_time(&t, "%Y-%m-%dT%H:%M:%S");
         return ss.str();
     }
 

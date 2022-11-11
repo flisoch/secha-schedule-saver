@@ -11,7 +11,7 @@ function getTableRows(table)
 end
 
 
-file = open("schedule.html")
+file = open("../web_root/schedule.html")
 doc = parsehtml(read(file, String))
 table = getTable(doc)
 rows = getTableRows(table[1])

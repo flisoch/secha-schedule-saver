@@ -3,3 +3,5 @@ build
 credentials.json
 schedule.csv
 .vscode
+deploy
+.cache

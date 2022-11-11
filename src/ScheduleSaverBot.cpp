@@ -28,7 +28,6 @@ void ScheduleSaverBot::start()
         TgLongPoll longPoll(bot);
         while (true)
         {
-            cout << "Long poll started\n";
             longPoll.start();
         }
     }
