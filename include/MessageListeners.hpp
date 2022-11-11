@@ -63,14 +63,14 @@ inline TgBot::EventBroadcaster::MessageListener saveSchedule(TgBot::Bot &bot,
       bot.getApi().sendMessage(message->chat->id,
                                "Загружаю расписание в календарь...");
       Schedule s = Schedule::loadSchedule();
-      auto responses =
-          requests::calendar::saveSchedule(auth.getToken(message->chat->id), s);
-     
-     if(responses.empty()) {
-        bot.getApi().sendMessage(message->chat->id, "Google couldn't create a calendar :<( ");
+      std::string calendarId = requests::calendar::insertCalendar(
+          auth.getToken(message->chat->id), s.summary);
+      if (calendarId.empty()) {
+        bot.getApi().sendMessage(message->chat->id,
+                                 "Google couldn't create a calendar :<( ");
         return;
-     }
-     auto keyboard =
+      }
+      auto keyboard =
           getLinkButtonKeyboard("Посмотреть в Google Calendar",
                                 "https://calendar.google.com/calendar/");
       bot.getApi().sendMessage(
@@ -78,13 +78,9 @@ inline TgBot::EventBroadcaster::MessageListener saveSchedule(TgBot::Bot &bot,
           "Постепенно загружаю по дням. Уже можешь смотреть!", false, 0,
           keyboard);
 
-      for (auto r : responses) {
-        auto ans = r.get();
-        auto json = nlohmann::json::parse(ans.text);
-        if (json.contains("error")) {
-          std::cout << json["error"] << "\n";
-        }
-      }
+      
+      requests::calendar::saveSchedule(auth.getToken(message->chat->id), s, calendarId);
+      
       bot.getApi().sendMessage(message->chat->id, "Загружено полностью!");
 
     } else {

@@ -5,9 +5,11 @@
 #include "Schedule.hpp"
 #include "cpr/cpr.h"
 #include <cpr/response.h>
+#include <exception>
 #include <future>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <thread>
 
 namespace requests {
 namespace url {
@@ -85,7 +87,7 @@ static std::string insertCalendar(const std::string &access_token,
   } else if (json_response.contains("error")) {
     std::cout << json_response["error"];
   }
-  
+
   return calendarId;
 }
 
@@ -99,24 +101,37 @@ static long deleteCalendar(const std::string &access_token,
 }
 
 static std::vector<std::shared_future<cpr::Response>>
-saveSchedule(std::string access_token, const Schedule &schedule) {
-  std::string calendarId = insertCalendar(access_token, schedule.summary);
+saveSchedule(std::string access_token, const Schedule &schedule,
+             const std::string &calendarId) {
   std::string url = requests::url::calendar_events(calendarId);
   std::vector<std::shared_future<cpr::Response>> responses;
-  int requests_per_sec = 5;
+  int batch = 5;
+  int sleep_ms = 200;
   if (!calendarId.empty()) {
-    for (auto &event : schedule.events) {
+    for (int i = 0; i < schedule.events.size(); i++) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(sleep_ms));
       cpr::AsyncResponse r =
           cpr::PostAsync(cpr::Url{url}, cpr::Bearer{access_token},
-                         cpr::Body{event.toJson().dump()},
+                         cpr::Body{schedule.events[i].toJson().dump()},
                          cpr::Header{{"Content-Type", "application/json"}});
       responses.push_back(r.share());
+
+      if ((i + 1) % batch == 0) {
+        for (auto r : responses) {
+          auto ans = r.get();
+          try {
+            auto json = nlohmann::json::parse(ans.text);
+            if (json.contains("error")) {
+              std::cout << json["error"] << "\n";
+            }
+          } catch (std::exception &e) {
+            std::cerr << e.what() << "\n";
+          }
+        }
+        responses.clear();
+      }
     }
   }
-  else {
-     std::cout << "No calendar created";
-  }
-  //   deleteCalendar(access_token, calendarId);
   return responses;
 }
 } // namespace calendar
