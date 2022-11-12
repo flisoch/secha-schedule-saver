@@ -51,7 +51,7 @@ public:
     {
         Schedule s;
         s.summary = "Secha Schedule";
-        std::ifstream ifs("../schedule.csv", std::ifstream::in);
+        std::ifstream ifs("schedule.csv", std::ifstream::in);
         typedef boost::tokenizer<boost::escaped_list_separator<char>> tokenizer;
         boost::escaped_list_separator<char> separator( '\\', ',', '\"' );
         for (std::string line; std::getline(ifs, line);)

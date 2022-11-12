@@ -1,6 +1,7 @@
 #ifndef MESSAGELISTENERS_H
 #define MESSAGELISTENERS_H
 #include <nlohmann/json_fwd.hpp>
+#include <string>
 #pragma once
 
 #include "Auth.hpp"
@@ -28,14 +29,16 @@ getLinkButtonKeyboard(std::string linkText, std::string link) {
 
 inline TgBot::EventBroadcaster::MessageListener start(TgBot::Bot &bot) {
   return [&bot](TgBot::Message::Ptr message) {
-    bot.getApi().sendMessage(message->chat->id, "Hi!");
+    bot.getApi().sendMessage(
+        message->chat->id,
+        "Привет! Нажми Меню слева снизу, чтобы увидеть команды");
   };
 }
 
 inline TgBot::EventBroadcaster::MessageListener auth(TgBot::Bot &bot,
                                                      Auth &auth) {
   return [&bot, &auth](TgBot::Message::Ptr message) {
-    auth.waiting_for_tokens.push(std::to_string(message->chat->id));
+    auth.authRequest(message->chat->id);
     auto link = requests::url::google_oauth_code;
     auto keyboard = getLinkButtonKeyboard("Link", link);
     auto reply = bot.getApi().sendMessage(message->chat->id,
@@ -67,7 +70,8 @@ inline TgBot::EventBroadcaster::MessageListener saveSchedule(TgBot::Bot &bot,
           auth.getToken(message->chat->id), s.summary);
       if (calendarId.empty()) {
         bot.getApi().sendMessage(message->chat->id,
-                                 "Google couldn't create a calendar :<( ");
+                                 "Гугл не позволил создать календарь "
+                                 ":<(\nНапиши моему разработчику!");
         return;
       }
       auto keyboard =
@@ -78,14 +82,22 @@ inline TgBot::EventBroadcaster::MessageListener saveSchedule(TgBot::Bot &bot,
           "Постепенно загружаю по дням. Уже можешь смотреть!", false, 0,
           keyboard);
 
-      
-      requests::calendar::saveSchedule(auth.getToken(message->chat->id), s, calendarId);
-      
-      bot.getApi().sendMessage(message->chat->id, "Загружено полностью!");
+      int errors_count = requests::calendar::saveSchedule(
+          auth.getToken(message->chat->id), s, calendarId);
+
+      if (errors_count == 0) {
+        bot.getApi().sendMessage(message->chat->id, "Загружено полностью!");
+
+      } else {
+        std::string errors = std::to_string(errors_count);
+        bot.getApi().sendMessage(message->chat->id,
+                                 "Загружено! Но " + errors +
+                                     "пары не загрузились :<(");
+      }
 
     } else {
       bot.getApi().sendMessage(message->chat->id,
-                               "Not authorized. Click /auth");
+                               "Нужно авторизоваться в Google!\nКликни /auth");
     }
   };
 }
@@ -97,7 +109,7 @@ inline TgBot::EventBroadcaster::MessageListener anyMessage(TgBot::Bot &bot) {
       return;
     }
     bot.getApi().sendMessage(message->chat->id,
-                             "Your message is: " + message->text);
+                             "Твоё сообщение: " + message->text);
   };
 }
 } // namespace MessageListeners

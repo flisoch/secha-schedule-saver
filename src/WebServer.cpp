@@ -48,7 +48,7 @@ void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
             {
                 std::string access_token = requests::oauth::getToken(code);
                 auth->access_tokens.emplace(auth->waiting_for_tokens.front(), access_token);
-                auth->waiting_for_tokens.pop();
+                auth->waiting_for_tokens.pop_front();
                 mg_http_serve_file(c, hm, "web_root/authSuccess.html", &opts);
             }
             else

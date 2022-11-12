@@ -20,10 +20,22 @@ add_custom_command(
                 ${CMAKE_CURRENT_BINARY_DIR}/config.toml
 )
 
+add_custom_command(
+        TARGET ${APP_TARGET} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+                ${PROJECT_SOURCE_DIR}/src/WebScraper/schedule.csv
+                ${CMAKE_CURRENT_BINARY_DIR}/schedule.csv
+)
+
 set(INSTALL_PATH ${PROJECT_SOURCE_DIR}/deploy)
 install(
         TARGETS ${APP_TARGET} 
         RUNTIME DESTINATION ${INSTALL_PATH}
 )
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/web_root/ DESTINATION ${INSTALL_PATH}/web_root)
-install(FILES ${PROJECT_SOURCE_DIR}/config.toml DESTINATION ${INSTALL_PATH}/)
+install(FILES 
+                ${PROJECT_SOURCE_DIR}/config.toml
+                ${PROJECT_SOURCE_DIR}/src/WebScraper/schedule.csv 
+        DESTINATION ${INSTALL_PATH}/
+
+)

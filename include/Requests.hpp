@@ -100,13 +100,14 @@ static long deleteCalendar(const std::string &access_token,
   return r.status_code;
 }
 
-static std::vector<std::shared_future<cpr::Response>>
+static int
 saveSchedule(std::string access_token, const Schedule &schedule,
              const std::string &calendarId) {
   std::string url = requests::url::calendar_events(calendarId);
   std::vector<std::shared_future<cpr::Response>> responses;
   int batch = 5;
-  int sleep_ms = 200;
+  int sleep_ms = 225;
+  int errors_count = 0;
   if (!calendarId.empty()) {
     for (int i = 0; i < schedule.events.size(); i++) {
       std::this_thread::sleep_for(std::chrono::milliseconds(sleep_ms));
@@ -123,6 +124,7 @@ saveSchedule(std::string access_token, const Schedule &schedule,
             auto json = nlohmann::json::parse(ans.text);
             if (json.contains("error")) {
               std::cout << json["error"] << "\n";
+              errors_count++;
             }
           } catch (std::exception &e) {
             std::cerr << e.what() << "\n";
@@ -131,8 +133,11 @@ saveSchedule(std::string access_token, const Schedule &schedule,
         responses.clear();
       }
     }
+    if (errors_count != 0) {
+      std::cout << "Errors count: " << errors_count << "\n";
+    }
   }
-  return responses;
+  return errors_count;
 }
 } // namespace calendar
 } // namespace requests
