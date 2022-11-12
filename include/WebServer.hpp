@@ -1,9 +1,9 @@
 #ifndef WEBSERVER_H
 #define WEBSERVER_H
 
-#include <map>
-#include "mongoose.h"
 #include "Auth.hpp"
+#include "mongoose.h"
+#include <map>
 
 class WebServer
 {

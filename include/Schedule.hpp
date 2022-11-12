@@ -1,12 +1,12 @@
 #ifndef SCHEDULE_H
 #define SCHEDULE_H
 
+#include "boost/tokenizer.hpp"
 #include <fstream>
 #include <iomanip>
-#include <sstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include "boost/tokenizer.hpp"
+#include <sstream>
 
 class Schedule
 {
@@ -53,9 +53,8 @@ public:
         s.summary = "Secha Schedule";
         std::ifstream ifs("schedule.csv", std::ifstream::in);
         typedef boost::tokenizer<boost::escaped_list_separator<char>> tokenizer;
-        boost::escaped_list_separator<char> separator( '\\', ',', '\"' );
-        for (std::string line; std::getline(ifs, line);)
-        {
+        boost::escaped_list_separator<char> separator('\\', ',', '\"');
+        for (std::string line; std::getline(ifs, line);) {
             tokenizer tok{line, separator};
             tokenizer::iterator it = tok.begin();
             Schedule::Event e;

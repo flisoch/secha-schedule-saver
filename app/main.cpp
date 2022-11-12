@@ -1,15 +1,15 @@
-#include <thread>
+#include "Config.hpp"
 #include "ScheduleSaverBot.hpp"
 #include "WebServer.hpp"
-#include "Config.hpp"
+#include <thread>
 
 int main()
 {
-    Config& c = Config::instance();
+    Config &c = Config::instance();
     if (!c.isSetUp()) {
         return -1;
     }
-    
+
     Auth auth;
     WebServer s(auth);
     ScheduleSaverBot b(auth);

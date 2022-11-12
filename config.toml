@@ -1,11 +1,6 @@
-[telegram]
-bot_secret = ""
-
 [google]
-app_id = "227386243715-g04tg86v3228v9u6ng697c678or5obtn.apps.googleusercontent.com"
-app_secret = ""
+app_id = ""
 
 [server]
 domain = "localhost"
-# domain = "secha.flisoch.biz"
 port = 8000

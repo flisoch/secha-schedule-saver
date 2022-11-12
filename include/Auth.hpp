@@ -1,9 +1,9 @@
 #ifndef GOOGLECONNECTOR_H
 #define GOOGLECONNECTOR_H
 
-#include <string>
-#include <map>
 #include <deque>
+#include <map>
+#include <string>
 
 class Auth
 {
