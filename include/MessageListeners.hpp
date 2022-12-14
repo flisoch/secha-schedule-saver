@@ -54,8 +54,7 @@ namespace MessageListeners {
                                                              Auth &auth)
     {
         return [&bot, &auth](TgBot::Message::Ptr message) {
-            std::string link = /*requests::url::web_server*/
-                "http://secha.flisoch.biz:8000/getschedule";
+            std::string link = "https://student.sechenov.ru/personal/schedule.php";
             auto keyboard = getLinkButtonKeyboard("Link", link);
             bot.getApi().sendMessage(message->chat->id,
                                      "Посмотреть расписание на сайте", false, 0,

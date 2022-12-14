@@ -1,10 +1,6 @@
-set(LIB_TARGET "LibScheduleSaver")
-add_library(${LIB_TARGET} 
-        ScheduleSaverBot.cpp
-        WebServer.cpp
-        Auth.cpp
-        Config.cpp
-)
+set(LIB_TARGET "ScheduleSaver")
+add_library(${LIB_TARGET} ScheduleSaverBot.cpp WebServer.cpp Auth.cpp
+                          Config.cpp)
 
 find_package(Threads REQUIRED)
 find_package(OpenSSL REQUIRED)
@@ -18,21 +14,21 @@ find_package(tomlplusplus CONFIG REQUIRED)
 
 find_library(TGBOT_CPP_LIBRARY TgBot)
 target_link_libraries(
-        ${LIB_TARGET} PRIVATE
-        ${TGBOT_CPP_LIBRARY}
-        CURL::libcurl
-        cpr::cpr
-        Threads::Threads
-        ${Boost_LIBRARIES}
-        OpenSSL::SSL OpenSSL::Crypto
-        unofficial::mongoose::mongoose
-        nlohmann_json::nlohmann_json
-        tomlplusplus::tomlplusplus
-)
+  ${LIB_TARGET}
+  PRIVATE ${TGBOT_CPP_LIBRARY}
+          CURL::libcurl
+          cpr::cpr
+          Threads::Threads
+          ${Boost_LIBRARIES}
+          OpenSSL::SSL
+          OpenSSL::Crypto
+          unofficial::mongoose::mongoose
+          nlohmann_json::nlohmann_json
+          tomlplusplus::tomlplusplus)
 
 add_custom_command(
-        TARGET ${LIB_TARGET} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-                ${PROJECT_SOURCE_DIR}/src/WebScraper/schedule.csv
-                ${PROJECT_BINARY_DIR}/schedule.csv
-)
+  TARGET ${LIB_TARGET}
+  POST_BUILD
+  COMMAND
+    ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/src/WebScraper/schedule.csv
+    ${PROJECT_BINARY_DIR}/schedule.csv)

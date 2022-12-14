@@ -3,7 +3,7 @@ add_executable(${APP_TARGET} main.cpp)
 
 
 target_link_libraries(${APP_TARGET} PRIVATE
-    LibScheduleSaver
+        ScheduleSaver
 )
 
 add_custom_command(
@@ -37,5 +37,4 @@ install(FILES
                 ${PROJECT_SOURCE_DIR}/config.toml
                 ${PROJECT_SOURCE_DIR}/src/WebScraper/schedule.csv 
         DESTINATION ${INSTALL_PATH}/
-
 )
